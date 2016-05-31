@@ -1,0 +1,52 @@
+
+df11 = read.csv("C:\\Users\\sohail.ahmad\\Documents\\tata_old.csv")
+df22 = read.csv("C:\\Users\\sohail.ahmad\\Documents\\tata_new.csv")
+
+#Merging the two datasets using three common variables
+data = merge(df11, df22, by =c("conno", "web_top_n", "ccid"))
+
+#Removing the duplicate values
+df = data[!duplicated(data),]
+
+
+#Show only columns which have one or more missing values
+M = sapply(df, function(x) sum(is.na(x)))
+sort(M[M>0], decreasing=TRUE) #Sorting in descending order
+
+#Remove all the columns which have over 4k missing values
+df[colSums(is.na(df)) > 4000]  = NULL
+fix(df)
+
+---
+#Taking the subset of numerical values for analysis
+df1 = df[,147:176]
+summary(df1)
+
+#Imputation of max_od with the mean value
+me = mean(df1$max_od, na.rm=TRUE)
+df1$max_od[is.na(df1$max_od)] = 0
+df1$max_od[df1$max_od == 0] = me
+summary(df1$max_od)
+
+scatter.smooth(df1$Principal_Outstanding_Apr16)
+summary(df1$Principal_Outstanding_Apr16)
+
+####  OUTLIER TREATMENT. Capping extreme values at 5% and 95%
+pcap <- function(x){
+  for (i in which(sapply(x, is.numeric))) {
+    quantiles <- quantile( x[,i], c(.05, .95 ), na.rm =TRUE)
+    x[,i] = ifelse(x[,i] < quantiles[1] , quantiles[1], x[,i])
+    x[,i] = ifelse(x[,i] > quantiles[2] , quantiles[2], x[,i])}
+  x}
+
+#Applying the percentile capping function on the dataset
+df2 = pcap(df1)
+summary(df2$Principal_Outstanding_Apr16)
+
+library(pls)
+set.seed (2)
+pcr.fit = pcr(Principal_Outstanding_Apr16~., data=df1, scale=TRUE, validtion= "CV")
+summary(pcr.fit)
+validationplot(pcr.fit ,val.type= "MSEP")
+
+pcr.fit1 = pcr(Principal_Outstanding_Apr16~., data=df1, scale =TRUE ,ncomp =10)
