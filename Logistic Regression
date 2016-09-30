@@ -1,0 +1,121 @@
+
+
+rm(list=ls())
+df1 = read.csv("Audio_Calls.csv")
+df2 = read.csv("RStatus.csv")
+
+names(df1)
+df1[,3:29] = NULL
+df1[,11:13] = NULL
+
+names(df2)
+
+#Changing the name of variable with column index 2
+colnames(df2)[2] = "Case_Id"
+df = merge(df1, df2, by = "Case_Id")
+
+names(df)
+df[,1:2] = NULL
+
+table(df$Repayment.Status)
+
+#Changing the name of levels Chargeoof, PendingDef & UnderRev as 1 and rest as 0
+levels(df$Repayment.Status)[levels(df$Repayment.Status)== "Chargeoff"] = 1
+levels(df$Repayment.Status)[levels(df$Repayment.Status)== "Pending Default"] = 1
+levels(df$Repayment.Status)[levels(df$Repayment.Status)== "Under Review"] = 1
+df$RS_Binary = ifelse(df$Repayment.Status == 1,1,0)
+table(df$RS_Binary)
+
+df$Repayment.Status = NULL
+df$Lead.Id = NULL
+
+df11 = df  #Making a copy of original avriable
+
+#Transforming some of the variable, converting em into proportion and giving new variables
+df$Prop_Complete_Call = df$Complete_Call/df11$All_Call
+df$RT_GTET_30_Complete_Call = df$GTET_30_Complete_Call/df11$Complete_Call
+df$Avg_Complete_Call_Dur = df$All_Complete_Call_Dur/df11$Complete_Call
+
+#Deleting the original vairbale
+df$Complete_Call = NULL
+df$GTET_30_Complete_Call = NULL
+df$All_Complete_Call_Dur = NULL
+
+#CHecking the columns with missing values
+sapply(df, function(x) sum(is.na(x)))
+
+# NA values for these variables is actually zero. Lets impute em.
+df$Avg_Complete_Call_Dur[is.na(df$Avg_Complete_Call_Dur)] = 0
+df$GTET_30_Complete_Call_Dur[is.na(df$GTET_30_Complete_Call_Dur)] = 0
+df$LT_30_Complete_Call_Dur[is.na(df$LT_30_Complete_Call_Dur)] = 0
+df$RT_GTET_30_Complete_Call[is.na(df$RT_GTET_30_Complete_Call)] = 0
+
+df$All_Call = NULL
+
+df$RS_Binary = as.factor(df$RS_Binary)
+set.seed(50)
+library(caTools)
+spl = sample.split(df$RS_Binary, SplitRatio = 0.7)
+Train = subset(df, spl == T)
+Test = subset(df, spl == F)
+
+
+###############################
+Model = glm(RS_Binary ~., data=Train, family=binomial)
+summary(Model)
+
+#CHecking the variance inflation factor. All variables shoudl be less than 10.
+library(car)
+vif(Model)
+
+# To assess the relative importance of individual predictors we can look at the absolute value
+# of the t-statistic for each model parameter. Higher the value, significant the variable
+library(caret)
+varImp(Model)
+
+#Getting the Confidence intervals
+confint(Model, level=0.95)
+
+# Confidence intervals using standard errors
+confint.default(Model, level=0.95)
+
+## odds ratios only
+exp(coef(Model))
+
+## odds ratios and 95% CI
+exp(cbind(OR = coef(Model), confint(Model, level=0.95)))
+table(Test$Fund_Flag)
+# Wald test gives chi-square test. Terms means variable number. Terms=2 complete_call
+library(aod)
+wald.test(b = coef(Model), Sigma = vcov(Model), Terms = 1)
+wald.test(b = coef(Model), Sigma = vcov(Model), Terms = 2)
+wald.test(b = coef(Model), Sigma = vcov(Model), Terms = 3)
+
+# table of deviance. Higher no. always denote bad fit. When we use only intercept, deviance is 2537
+# When we use all variabels, deviance goes down to 2474
+anova(Model, test="Chisq")
+
+Pred = predict(Model, newdata=Test, type = "response")
+summary(Pred)
+
+
+##### ROC Curve
+library(ROCR)
+ROCRPred = prediction(Pred, Test$RS_Binary)
+ROCRPerf = performance(ROCRPred, "tpr", "fpr")
+plot(ROCRPerf)
+
+plot(ROCRPerf, colorize=T, print.cutoffs.at=seq(0,1,0.05), text.adj=c(-0.2,1.7))
+auc = as.numeric(performance(ROCRPred, "auc")@y.values)
+
+
+library(fmsb)
+NagelkerkeR2(Model)
+
+library(pscl)
+pR2(Model)  #Look for McFadden. It's psuedo R squared. G2 is -2Log Likelihood here
+
+### Calculate tpr and fpr now
+
+#TPR or Sensitivity. It goes up with lower threshold value
+table(Test$RS_Binary, Pred > 0.05)
