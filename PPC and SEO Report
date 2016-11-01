@@ -1,0 +1,73 @@
+
+
+
+
+#################### PPC WITH SEO   ##############################
+
+library(xlsx)
+
+daily = read.xlsx("C:\\Users\\sohail.ahmad\\Documents\\TVC With SEO.xlsx", header=T, sheetIndex=1)
+daily = daily[,5:31]
+daily[is.na(daily)] = 0
+
+cor(daily$Leads, daily)
+
+#########################  OVERALL WEEKLY    ############################
+
+weekly  = read.xlsx("C:\\Users\\sohail.ahmad\\Documents\\TVC With SEO.xlsx", header=T, sheetIndex=2)
+names(weekly)
+weekly = weekly[,2:28]
+weekly[is.na(weekly)] = 0
+summary(weekly)
+
+cor(weekly$Leads, weekly)
+
+
+#######################   Overall Weekly    #############################
+library(xlsx)
+overall_weekly  = read.xlsx("C:\\Users\\sohail.ahmad\\Documents\\TVC With SEO.xlsx", header=T, sheetIndex=3)
+names(overall_weekly)
+overall_weekly = overall_weekly[,2:5]
+overall_weekly[is.na(overall_weekly)] = 0
+
+Model1 = lm(Leads ~., data = overall_weekly)
+summary(Model1)
+cor(overall_weekly$Leads, overall_weekly)
+
+
+####################     By Channel Type     ######################
+
+channel  = read.xlsx("C:\\Users\\sohail.ahmad\\Documents\\TVC With SEO.xlsx", header=T, sheetIndex=4)
+names(channel)
+channel = channel[,4:9]
+channel[is.na(channel)] = 0
+Model2 = lm(Leads ~., data = channel)
+summary(Model2)
+
+Mod1 = lm(Leads ~ PR_Campaign + Budget_in_. + Ent_Channels, data= channel)
+summary(Mod1)
+
+Mod2 = lm(Leads ~ PR_Campaign + Budget_in_. + Buss_Chanels, data= channel)
+summary(Mod2)
+
+Mod3 = lm(Leads ~ PR_Campaign + Budget_in_. + Sports_Channel, data= channel)
+summary(Mod3)
+
+cor(channel$Leads, channel)
+
+
+####################     Desi vs International Channel     ######################
+
+desi  = read.xlsx("C:\\Users\\sohail.ahmad\\Documents\\TVC With SEO.xlsx", header=T, sheetIndex=5)
+names(desi)
+desi = desi[,4:8]
+desi[is.na(desi)] = 0
+
+Model3 = lm(Leads ~ PR_Campaign + Budget_in_. + Desi_Telecast, , data = desi)
+summary(Model3)
+
+Model4 = lm(Leads ~ PR_Campaign + Budget_in_. + Intrl_Telecast, , data = desi)
+summary(Model4)
+
+cor(desi$Leads, desi)
+
