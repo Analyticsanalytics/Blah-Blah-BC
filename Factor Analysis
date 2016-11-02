@@ -19,7 +19,7 @@ sort(M[M>0], decreasing=TRUE) #Sorting in descending order
 cor(df1)
 library(psych)
 
-fit = factanal(df1, factors = 2, rotation = "varimax")
+fit = factanal(df1, factors = 2, rotation = "varimax", scores="regression")
 print(fit) 
 #Since p-value is zero (level of significance),it indicates that the hypothesis of perfect model fit is rejected. 
 
@@ -33,16 +33,11 @@ ev$values
 # factanal fn performs maximum-likelihood factor analysis on a covariance matrix or data matrix
 #The rotation= options include "varimax", "promax", and "none". Add the option scores="regression" or 
 #"Bartlett" to produce factor scores.
-fit1 = factanal(df1, factors = 5, rotation = "varimax")
+fit1 = factanal(df1, factors = 5, rotation = "varimax", scores="regression")
 colnames(fit1$loadings) = c("Fac_1","Fac_2","Fac_3","Fac_4","Fac_5")
 print(loadings(fit1), digits=2, cutoff=.2, sort=TRUE) 
 
-scores = fit1$loadings
-df1_fac = cbind(df1[as.integer(rownames(scores)),],scores)
-
-scores = data.frame(scores)
-TrueDat <- merge(df1,scores,by=0,all.x=TRUE,sort=FALSE)
-fix(scores)
+df2 = (df1, fit1$scores)
 
 #Component Matrix & Rotated Matrix
 
