@@ -1,6 +1,6 @@
 
 ## Note: It's incomplete as of now.
-
+http://www.statisticssolutions.com/factor-analysis-sem-exploratory-factor-analysis/
 
 df = read.csv("C:\\Users\\sohail.ahmad\\Documents\\tata_final.csv")
 str(df)
