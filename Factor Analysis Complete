@@ -19,8 +19,9 @@ ROTATION: Suppose you've 10 variables. So, you can make 1st factor using 2 or va
        
        1) QUARTIMAX: Rows are simplified so that the variable should be loaded on a single factor
        2) VARIMAX:   Used to simplify the column of the factor matrix so that the factor extracts are clearly associated and there 
-                     should be some separation among the variables
+                     should be some separation among the variables. 
        3) EQUIMAX:   The combination of the above two methods. This method simplifies row and column at a single time
+                     
 
 
 Three tests are conducted for the purpose of factor analysis:
@@ -91,4 +92,5 @@ cortest.bartlett(corMat, n = 1000,diag=TRUE)
 #KMO measurement of sample of Adequacy. Here MSA means measurement of sample adequacy. corMat is correlation matrix
 KMO(corMat)
 
-
+## More here: http://www.theanalysisfactor.com/rotations-factor-analysis/
+              http://www.statisticssolutions.com/factor-analysis-sem-exploratory-factor-analysis/
