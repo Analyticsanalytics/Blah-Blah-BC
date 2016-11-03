@@ -9,7 +9,19 @@ EIGEN-VALUES: Eigenvalues is also called characteristic roots.  Eigenvalues show
 FACTOR SCORE: The factor score is also called the component score.  This score is of all row and columns, which can be used as an 
               index of all variables and can be used for further analysis.
 
-ORTHOGONAL ROTATION:
+ROTATION: Suppose you've 10 variables. So, you can make 1st factor using 2 or variables which are highly correlated with each other.
+          The factor analysis program then looks for the second set of correlations and calls it Factor 2, and so on. Now these
+          factors can be rotated along any axis to better fit the latent variables. While rotating, a particular variables CAN OR
+          CANT be correlated to other factors.
+       OBLIQUE ROTATION: Rotations that allow factors to be correlated to each other is called oblique rotation.
+       ORTHOGONAL ROTATION: When we rotate all factors by 90-degree so that these factors are uncorrelated to each other.
+       Orthogonal rotation is of 3-types:
+       
+       1) QUARTIMAX: Rows are simplified so that the variable should be loaded on a single factor
+       2) VARIMAX:   Used to simplify the column of the factor matrix so that the factor extracts are clearly associated and there 
+                     should be some separation among the variables
+       3) EQUIMAX:   The combination of the above two methods. This method simplifies row and column at a single time
+
 
 Three tests are conducted for the purpose of factor analysis:
 1) Parallel Analysis: It uses eigen values and shows the np. of factors that has to be created.
