@@ -1,0 +1,82 @@
+
+We use Factor Analysis to remove the problem of multicollinearity in the data and convert high-dimensional data into low-dimension.
+The factors in FA are the weights of diff variables together. Factors are calculated from correlation matrix.
+
+Few Terms Explained:
+FACTOR LOADINGS: Factor loading is basically the correlation coefficient for the variable and factor.  
+EIGEN-VALUES: Eigenvalues is also called characteristic roots.  Eigenvalues shows variance explained by that particular factor out of 
+             the total variance.
+FACTOR SCORE: The factor score is also called the component score.  This score is of all row and columns, which can be used as an 
+              index of all variables and can be used for further analysis.
+
+ORTHOGONAL ROTATION:
+
+Three tests are conducted for the purpose of factor analysis:
+1) Parallel Analysis: It uses eigen values and shows the np. of factors that has to be created.
+2) Bartlett's test for Sphericity: Here we testif the correlation matrix is identity (diagnals is 1 and rest is zero). Identity of
+   correlation matrix means variables are indepedent. If p-value is zero, we'll reject null hypothesis means there are some correlation
+   between variables and we can go ahead with factor analysis.
+3) Kaiser-Meyer-Olkin (KMO) Measure of Sample Adequacy (MSA): measure of how suited your data is for Factor Analysis. It checks
+   proportion of variance among variables that might be common variance (or correlations).
+   KMO value b/w 0.8-1 means sampling is adequate. KMO less than 0.8 is not good and remedial action should be taken.
+  
+4
+
+
+rm(list=ls())
+df = read.csv("C:\\Users\\sohail.ahmad\\Documents\\tata_final.csv")
+
+#Taking the subset of numerical values for analysis
+df1 = df[,146:172]
+summary(df1)
+
+
+#Show only columns which have one or more missing values
+M = sapply(df1, function(x) sum(is.na(x)))
+sort(M[M>0], decreasing=TRUE) #Sorting in descending order
+
+
+
+# PARALLEL ANALYSIS  using eigen values. We consider all the components who values is 1 or greater than 1. We'll take 5 factors in this 
+# case. eigen values explains the variance in the dataset
+library(psych)
+library(nFactors)
+evs = eigen(cor(df1)) 
+evs$values
+ap = parallel(subject=nrow(df1),var=ncol(df1),rep=100,cent=.05)
+nS = nScree(x=evs$values, aparallel=ap$eigen$qevpea)
+plotnScree(nS)      #Drawing a screeplot
+
+
+
+# factanal fn performs maximum-likelihood factor analysis on a covariance matrix or data matrix. The rotation= options include 
+# "varimax", "promax", and "none". Add the option scores="regression" or "Bartlett" to produce factor scores.
+fit1 = factanal(df1, factors = 5, rotation = "varimax", scores="regression")
+colnames(fit1$loadings) = c("Fac_1","Fac_2","Fac_3","Fac_4","Fac_5")
+print(loadings(fit1), digits=2, cutoff=.2, sort=TRUE) 
+names(fit1)
+summary(fit1)
+
+#We can add the scores in original set and use em (instead of originial variables) for modelling
+df2 = cbind(df1, fit1$scores)
+fix(df2)
+
+
+# Getting correlation matrix
+corMat = cor(df1)
+print(corMat)
+
+# Getting Rotated Matrix
+library(GPArotation)
+solution = fa(r = corMat, nfactors = 5, rotate = "oblimin", fm = "pa")
+print(solution)
+
+
+#Bartlett's test for sperificity. corMat is correlation matrix. p-value is of chi-sq. $df is degree of freedom. n sample size to take
+cortest.bartlett(corMat, n = 1000,diag=TRUE)
+
+
+#KMO measurement of sample of Adequacy. Here MSA means measurement of sample adequacy. corMat is correlation matrix
+KMO(corMat)
+
+
