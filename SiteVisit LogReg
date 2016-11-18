@@ -1,0 +1,107 @@
+
+
+
+
+
+rm(list = ls())
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
+df = read.csv(file = "SiteVisit.csv", stringsAsFactors = FALSE, na.strings = "")
+summary(df)
+names(df)
+table(df$LocationTerminals)
+
+df1 = df[, -c(1:5,10:15,17,18,21,22,24,32,37:42)]
+names(df1)
+
+
+#CHecking the missing values from columns and logically imputing them
+colSums(is.na(df1))
+
+
+#Doing the necessary binary transformation & imputation for LocationType
+df1$LocationType = ifelse(df1$LocationType=="Commercial",1,0)
+df1$LocationType[is.na(df1$LocationType)] = 1
+
+
+#Need to look at ServiceName variable and change it into two labels only
+table(df1$ServiceName)
+df1$ServiceName = ifelse(df1$ServiceName=="Merchant Site One Day- UNannounced",
+                         1,ifelse(df1$ServiceName=="Merchant Site Two Day- UNannounced",1,0))
+
+#Converting the False values to zero in forsale
+table(df1$SquareFootage)
+df1$ForSale = ifelse(df1$ForSale=="1",1,0)
+df1$Operating = ifelse(df1$Operating=="1",1,0)
+df1$SignagePresent = ifelse(df1$SignagePresent=="1",1,0)
+
+
+
+
+
+sapply(df1, class)
+fac = c(2,3,5,6,7,9,10,11:14,16:19)
+df1[,fac] = lapply(df1[,fac] , factor)
+
+#Same for numeric. it will create NA values in PPvD; we impute witht the mean
+nume = c(1,4)
+df1[,nume] = lapply(df1[,nume], as.numeric)
+df1$PPvD[is.na(df1$PPvD)] = mean(df1$PPvD, na.rm=TRUE)
+
+df1$LocationEmployees = as.integer(df1$LocationEmployees)
+df1$LocationAgeMonths = as.integer(df1$LocationAgeMonths)
+df1$LocationEmployees[is.na(df1$LocationEmployees)] = median(df1$LocationEmployees, na.rm=TRUE)
+
+#THere are no missing values in the dataset
+colSums(is.na(df1))
+
+
+
+#Checking the label proportions of potential dependent variables
+prop.table(table(df1$Delinquent))
+prop.table(table(df1$Severely.Delinquent))
+summary(df1$PPvD)
+
+#Now lets delete two the potential dependent variables
+df1$Severely.Delinquent = NULL
+df1$PPvD = NULL
+
+
+set.seed(20)
+library(caTools)
+spl = sample.split(df1$Delinquent, SplitRatio = 0.7)
+train = subset(df1, spl==TRUE)
+test = subset(df1, spl==FALSE)
+
+
+
+Model = glm(Delinquent ~., data=train, family=binomial)
+summary(Model)
+
+#CHecking the variance inflation factor. All variables shoudl be less than 10.
+library(car)
+vif(Model)
+
+#Higher the t-value, significant the variable
+library(caret)
+varImp(Model)
+
+
+Pred = predict(Model, newdata=test, type = "response")
+summary(Pred)
+
+
+##### ROC Curve
+library(ROCR)
+ROCRPred = prediction(Pred, test$Delinquent)
+ROCRPerf = performance(ROCRPred, "tpr", "fpr")
+plot(ROCRPerf)
+
+plot(ROCRPerf, colorize=T, print.cutoffs.at=seq(0,1,0.05), text.adj=c(-0.2,1.7))
+auc = as.numeric(performance(ROCRPred, "auc")@y.values)
+
+
+library(fmsb)
+NagelkerkeR2(Model)
+
+library(pscl)
+pR2(Model)  #Look for McFadden. It's psuedo R squared. G2 is -2Log Likelihood here
