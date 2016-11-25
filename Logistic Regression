@@ -73,11 +73,14 @@ vif(Model)
 library(caret)
 varImp(Model)
 
-#Getting the Confidence intervals
+#Confidence intervals using profiled Log-likelihood
 confint(Model, level=0.95)
 
 # Confidence intervals using standard errors
 confint.default(Model, level=0.95)
+
+# 95% CI for exponentiated coefficients
+exp(confint(m)) 
 
 ## odds ratios only
 exp(coef(Model))
