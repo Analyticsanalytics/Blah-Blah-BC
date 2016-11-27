@@ -66,7 +66,8 @@ sort(M[M>0], decreasing=TRUE) #Sorting in descending order
 library(psych)
 library(nFactors)
 evs = eigen(cor(df1)) 
-evs$values
+evs$values   #Take 5 factors
+
 ap = parallel(subject=nrow(df1),var=ncol(df1),rep=100,cent=.05)
 nS = nScree(x=evs$values, aparallel=ap$eigen$qevpea)
 plotnScree(nS)      #Drawing a screeplot
