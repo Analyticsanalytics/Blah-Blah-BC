@@ -1,4 +1,14 @@
+Both PCA & FA are used for dimensionality reduction and solve the problem of multi-collinearity.
 
+PCA tries to find linear combination of the variables which contain much information by looking at the variance. It finds 
+new combination of variables which form larger variances. These new set of variables are known as principle components. 
+The direction of 1st principal component is such that it captures the maxim variance in the data. 2nd component is always 
+orthogonal on the 1st principal component.
+
+####################################             FACTOR ANALYSIS            ##############################################
+Factor Analysis tries to find hidden variables which affect your observed variables by looking at the correlation. So let’s 
+ say there are three variables which are highly correlated. Factor analysis will club these variables together and create a 
+ single factor (Variable).
 We use Factor Analysis to remove the problem of multicollinearity in the data and convert high-dimensional data into low-dimension.
 The factors in FA are the weights of diff variables together. Factors are calculated from correlation matrix.
 
@@ -10,18 +20,18 @@ FACTOR SCORE: The factor score is also called the component score.  This score i
               index of all variables and can be used for further analysis.
 
 ROTATION: In FA, a particular variable might heavily dominate a factor. We use rotation to smooth out the dominance.
-          Suppose you've 10 variables. So, you can make 1st factor using 2 or variables which are highly correlated with each other.
-          The factor analysis program then looks for the second set of correlations and calls it Factor 2, and so on. Now these
-          factors can be rotated along any axis to better fit the latent variables. While rotating, a particular variables CAN OR
-          CANT be correlated to other factors.
+          Suppose you've 10 variables. So, you can make 1st factor using 2 or variables which are highly correlated with each
+          other. The factor analysis program then looks for the second set of correlations and calls it Factor 2, and so on. 
+          Now these factors can be rotated along any axis to better fit the latent variables. While rotating, a particular 
+          variables CAN OR CANT be correlated to other factors.
        OBLIQUE ROTATION: Rotations that allow factors to be correlated to each other is called oblique rotation.
        ORTHOGONAL ROTATION: When we rotate all factors by 90-degree so that these factors are uncorrelated to each other.
        Orthogonal rotation is of 3-types:
        
-       1) QUARTIMAX: In each variable the large loadings are increased and the small ones are decreased so that each variable will 
-                     only load on a few factors.
-       2) VARIMAX:   In each factor the large loadings are increased and the small ones are decreased so that each factor only has 
-                     a few variables with large loadings. Its basically variance maximization
+       1) QUARTIMAX: In each variable the large loadings are increased and the small ones are decreased so that each variable
+                     will only load on a few factors.
+       2) VARIMAX:   In each factor the large loadings are increased and the small ones are decreased so that each factor only
+                     has a few variables with large loadings. Its basically variance maximization
        3) EQUIMAX:   To rotate the loadings so that a variable loads high on one factor but low on others
        4) Orthomax:  User determined, based on the specified value of gamma
                      
@@ -29,11 +39,11 @@ ROTATION: In FA, a particular variable might heavily dominate a factor. We use r
 
 Three tests are conducted for the purpose of factor analysis:
 1) Parallel Analysis: It uses eigen values and shows the np. of factors that has to be created.
-2) Bartlett's test for Sphericity: Here we testif the correlation matrix is identity (diagnals is 1 and rest is zero). Identity of
-   correlation matrix means variables are indepedent. If p-value is zero, we'll reject null hypothesis means there are some correlation
-   between variables and we can go ahead with factor analysis.
-3) Kaiser-Meyer-Olkin (KMO) Measure of Sample Adequacy (MSA): measure of how suited your data is for Factor Analysis. It checks
-   proportion of variance among variables that might be common variance (or correlations).
+2) Bartlett's test for Sphericity: Here we testif the correlation matrix is identity (diagnals is 1 and rest is zero). 
+   Identity of correlation matrix means variables are indepedent. If p-value is zero, we'll reject null hypothesis means 
+   there are some correlation between variables and we can go ahead with factor analysis.
+3) Kaiser-Meyer-Olkin (KMO) Measure of Sample Adequacy (MSA): measure of how suited your data is for Factor Analysis. It 
+   checks proportion of variance among variables that might be common variance (or correlations).
    KMO value b/w 0.8-1 means sampling is adequate. KMO less than 0.8 is not good and remedial action should be taken.
 
 
@@ -51,8 +61,8 @@ sort(M[M>0], decreasing=TRUE) #Sorting in descending order
 
 
 
-# PARALLEL ANALYSIS  using eigen values. We consider all the components who values is 1 or greater than 1. We'll take 5 factors in this 
-# case. eigen values explains the variance in the dataset
+# PARALLEL ANALYSIS  using eigen values. We consider all the components who values is 1 or greater than 1. We'll take 5 
+# factors in this case. eigen values explains the variance in the dataset
 library(psych)
 library(nFactors)
 evs = eigen(cor(df1)) 
@@ -86,7 +96,8 @@ solution = fa(r = corMat, nfactors = 5, rotate = "oblimin", fm = "pa")
 print(solution)
 
 
-#Bartlett's test for sperificity. corMat is correlation matrix. p-value is of chi-sq. $df is degree of freedom. n sample size to take
+#Bartlett's test for sperificity. corMat is correlation matrix. p-value is of chi-sq. $df is degree of freedom. n sample size
+to take
 cortest.bartlett(corMat, n = 1000,diag=TRUE)
 
 
