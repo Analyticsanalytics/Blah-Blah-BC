@@ -105,3 +105,70 @@ NagelkerkeR2(Model)
 
 library(pscl)
 pR2(Model)  #Look for McFadden. It's psuedo R squared. G2 is -2Log Likelihood here
+
+
+#######################      Process used for LogReg & Random Forest      ################################################
+
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
+df = read.csv(file = "SiteVisit_21st Nov.csv", stringsAsFactors = FALSE, na.strings = c("", " ", NA))
+summary(df)
+
+df1 = df[, c(3,6:9,14,17,20,21,24,27,29:40)]
+names(df1)
+
+
+#CHecking the missing values from columns and logically imputing them
+colSums(is.na(df1))
+
+#Need to look at ServiceName variable and change it into two labels only
+table(df1$ServiceName)
+df1$ServiceName = ifelse(df1$ServiceName=="Merchant Site One Day- UNannounced",
+                         1,ifelse(df1$ServiceName=="Merchant Site Two Day- UNannounced",1,0))
+
+
+
+#Converting the False values to zero in forsale
+df1$ForSale = ifelse(df1$ForSale=="1",1,0)
+df1$Operating = ifelse(df1$Operating=="1",1,0)
+df1$SignagePresent = ifelse(df1$SignagePresent=="1",1,0)
+
+df1$LocationTerminals = as.integer(df1$LocationTerminals)
+df1$LT = df1$LocationTerminals
+df1$LocationTerminals = NULL
+df1$LT = ifelse(df1$LT==0,"LT0", ifelse(df1$LT==1,"LT1",
+                                        ifelse(df1$LT==2,"LT2", ifelse(df1$LT > 2, "LT2+","LTMiss"))))
+
+df1$LT[is.na(df1$LT)] = "LTMiss"
+
+#Same for numeric. it will create NA values in PPvD; we impute witht the mean
+df1$BA.Score = as.integer(df1$BA.Score)
+df1$PPvD = as.numeric(df1$PPvD)
+df1$PPvD[is.na(df1$PPvD)] = mean(df1$PPvD, na.rm=TRUE)
+
+
+df1$LocationEmployees = as.integer(df1$LocationEmployees)
+df1$LocationEmployees[is.na(df1$LocationEmployees)] = median(df1$LocationEmployees, na.rm=TRUE)
+df1$LocationAge.Months. = as.integer(df1$LocationAge.Months.)
+
+#14 missing values in locationtype. Lets give em majority vote and convert to commercial
+df1$LocationType[is.na(df1$LocationType)] = "Commercial"
+
+names(df1)
+fac = c(3,4,6,7,8,9,10,12:17,19:23)
+df1[,fac] = lapply(df1[,fac], as.factor)
+str(df1)
+
+#THere are no missing values in the dataset
+colSums(is.na(df1))
+
+df1$SquareFootage = NULL
+set.seed(20)
+library(caTools)
+spl = sample.split(df1$Delinquent, SplitRatio = 0.7)
+train = subset(df1, spl==TRUE)
+test = subset(df1, spl==FALSE)
+
+train = train[, -c(1,4,5)]
+test = test[, -c(1,4,5)]
+
+
