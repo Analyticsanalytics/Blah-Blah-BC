@@ -2,9 +2,6 @@
 
 ################   USing pre-processed dataset for SMOTE Algorithm   ###########################
 
-
-################   USing pre-processed dataset for SMOTE Algorithm   ###########################
-
 rm(list = ls())
 getwd()
 setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
