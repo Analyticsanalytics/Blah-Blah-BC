@@ -2,10 +2,13 @@
 
 ################   USing pre-processed dataset for SMOTE Algorithm   ###########################
 
+
+################   USing pre-processed dataset for SMOTE Algorithm   ###########################
+
 rm(list = ls())
 getwd()
 setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
-df = read.csv(file = "Dataset.csv", na.strings = c("", " ", NA))
+df = read.csv(file = "dataset.csv", na.strings = c("", " ", NA))
 summary(df)
 
 colSums(is.na(df))
@@ -59,61 +62,79 @@ prop.table(table(train$Delinquent))
 library(ROSE)
 
 #######  1) Oversampling. 
+
 #majority class has 972 cases in train. we'll match minority class  equal to majority class, hence N=1944
 df_over = ovun.sample(Delinquent ~ ., data = train, method = "over",N = 1944)$data
-table(df_over$Delinquent)   #Both the classes have same no. of observation (972) now
+
+#Both the classes have same no. of observation (972) now
+table(df_over$Delinquent) 
 
 
 
- 2) Undersampling.  undersampling is done without replacement. Positive cases is 68 so N=136
+
+#######  2) Undersampling.  undersampling is done without replacement. Positive cases is 68 so N=136
 df_under = ovun.sample(Delinquent ~ ., data = train, method = "under",N = 136)$data
-table(df_under$Delinquent)  #Dataset is balanced but we’ve lost significant information from the sample. 
+
+#Dataset is balanced but we’ve lost significant information from the sample. 
+table(df_under$Delinquent)
 
 
- 3) Both Oversampling & Undersampling simultaneously 
 
-# his can be achieved using method = “both“. In this case, the minority class is oversampled with replacement and majority class is
-# undersampled without replacement. train has 1040 observations p refers to the probability of positive class in newly generatedsample
+
+
+#######  3) Both Oversampling & Undersampling simultaneously 
+
+# his can be achieved using method = “both“. In this case, the minority class is oversampled
+# with replacement and majority class is undersampled without replacement. train has 1040 observations
+# p refers to the probability of positive class in newly generated sample
 df_both = ovun.sample(Delinquent ~ ., data = train, method = "both",N = 1040)$data
-table(df_both$Delinquent) #Now negative cases are 559 and positive cases are 481 only
 
-# The data generated above from oversampling have expected amount of repeated observations. Data generated from undersampling is deprived
-# of important information from the original data. This leads to inaccuracies in the resulting performance. To encounter these issues, 
-# ROSE helps us to generate data synthetically as well. The data generated using ROSE is considered to provide better estimate of original data
+#Now negative cases are 559 and positive cases are 481 only
+table(df_both$Delinquent)
 
+# The data generated above from oversampling have expected amount of repeated observations. Data
+# generated from undersampling is deprived of important information from the original data. This
+# leads to inaccuracies in the resulting performance. To encounter these issues, ROSE helps us to
+# generate data synthetically as well. The data generated using ROSE is considered to provide 
+# better estimate of original data
 
- 4) Synthetically generating data using ROSE algorithm
+#########  4) Synthetically generating data using ROSE algorithm
 df_rose = ROSE(Delinquent ~ ., data = train, seed = 1)$data
 table(df_rose$Delinquent) #df_rose has 1040 observations; same as original train set
 
 
 
-#build randomForest models
+#build decision randomForest models
 library(randomForest)
-RFover = randomForest(Delinquent ~., data= df_over)
-RFunder = randomForest(Delinquent ~., data= df_under)
-RFboth = randomForest(Delinquent ~., data= df_both)
-RFrose = randomForest(Delinquent ~., data= df_rose)
+RFover = glm(Delinquent ~., data= df_over, family = binomial)
+RFunder = glm(Delinquent ~., data= df_under,family = binomial)
+RFboth = glm(Delinquent ~., data= df_both,family = binomial)
+RFrose = glm(Delinquent ~., data= df_rose,family = binomial)
 
 #Making the prediction on the test set
-pred_RFover = predict(RFover, newdata = test, type = "prob")
-pred_RFunder = predict(RFunder, newdata = test, type = "prob")
-pred_RFboth = predict(RFboth, newdata = test, type = "prob")
-pred_RFrose = predict(RFrose, newdata = test, type = "prob")
+pred_RFover = predict(RFover, newdata = test, type = "response")
+pred_RFunder = predict(RFunder, newdata = test, type = "response")
+pred_RFboth = predict(RFboth, newdata = test, type = "response")
+pred_RFrose = predict(RFrose, newdata = test, type = "response")
 
 fix(pred_RFrose)
 # Area under the curve (AUC): 0.657
-roc.curve(test$Delinquent, pred_RFover[,2])
+roc.curve(test$Delinquent, pred_RFover)
 
-# Area under the curve (AUC): 0.693. Add.roc will add this line in existing graph
-roc.curve(test$Delinquent, pred_RFunder[,2], add.roc = TRUE, col = "green")
+# Area under the curve (AUC): 0.693
+roc.curve(test$Delinquent, pred_RFunder, add.roc = TRUE, col = "green", typ="b")
 
-# Area under the curve (AUC): 0.643. lwd is the width of the line
-roc.curve(test$Delinquent, pred_RFboth[,2], add.roc = TRUE, col = "red", lwd=3)
+# Area under the curve (AUC): 0.643
+roc.curve(test$Delinquent, pred_RFboth, add.roc = TRUE, col = "red", lwd=3)
 
-# Area under the curve (AUC): 0.728
-roc.curve(test$Delinquent, pred_RFrose[,2], add.roc = TRUE, col = "voilet")
- 
- Here the best model is made with Synthetically generating minority class.
- 
- 
+# Area under the curve (AUC): 0.528
+roc.curve(test$Delinquent, pred_RFrose, add.roc = TRUE, col = "yellow")
+
+table(test$Delinquent, pred_RFrose >=0.5)
+
+
+library(fmsb)
+NagelkerkeR2(RFrose)
+
+library(pscl)
+pR2(RFrose)
