@@ -105,11 +105,11 @@ fix(pred_RFrose)
 # Area under the curve (AUC): 0.657
 roc.curve(test$Delinquent, pred_RFover[,2])
 
-# Area under the curve (AUC): 0.693
+# Area under the curve (AUC): 0.693. Add.roc will add this line in existing graph
 roc.curve(test$Delinquent, pred_RFunder[,2], add.roc = TRUE, col = "green")
 
-# Area under the curve (AUC): 0.643
-roc.curve(test$Delinquent, pred_RFboth[,2], add.roc = TRUE, col = "red")
+# Area under the curve (AUC): 0.643. lwd is the width of the line
+roc.curve(test$Delinquent, pred_RFboth[,2], add.roc = TRUE, col = "red", lwd=3)
 
 # Area under the curve (AUC): 0.728
 roc.curve(test$Delinquent, pred_RFrose[,2], add.roc = TRUE, col = "voilet")
