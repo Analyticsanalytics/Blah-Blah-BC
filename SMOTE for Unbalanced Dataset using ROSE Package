@@ -1,0 +1,119 @@
+
+
+################   USing pre-processed dataset for SMOTE Algorithm   ###########################
+
+rm(list = ls())
+getwd()
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
+df = read.csv(file = "Dataset.csv", na.strings = c("", " ", NA))
+summary(df)
+
+colSums(is.na(df))
+
+#Response variable is unbalanced with 93% Negative (zero cases and 6% positive cases.
+prop.table(table(df$Delinquent))
+
+
+df$Job.Id = NULL
+set.seed(20)
+library(caTools)
+spl = sample.split(df$Delinquent, SplitRatio = 0.7)
+train = subset(df, spl==TRUE)
+test = subset(df, spl==FALSE)
+
+
+train$Delinquent = as.factor(train$Delinquent)
+test$Delinquent = as.factor(test$Delinquent)
+
+library(randomForest)
+rf = randomForest(Delinquent ~., data = train, ntree=80, imp=TRUE, mtry=4, do.trace=TRUE)
+summary(rf)
+
+
+Pred = predict(rf, newdata = test, type = "prob")
+Pred.prob = Pred[,2]
+table(test$Delinquent, Pred.prob >= 0.5)
+
+library(ROCR)
+ROCRPred = prediction(Pred.prob, test$Delinquent)
+ROCRPerf = performance(ROCRPred, "tpr", "fpr")
+plot(ROCRPerf)
+plot(ROCRPerf, colorize=T, print.cutoffs.at=seq(0,1,0.05), text.adj=c(-0.2,1.7))
+auc = as.numeric(performance(ROCRPred, "auc")@y.values)
+
+####  Here Model only predicts false cases and AUC is 0.67 which is ridiculously low.
+
+
+# NOw we'll do the balancing of response from train using 4 methods. We'll leave test set as it is
+# 1) Oversampling
+# 2) Undesampling
+#3) Both over & undersampling simultaneiously
+#4) Synthetically generating the minority class from ROSE algorithm
+
+
+#93% negative case and only 7% positive cases in train
+table(train$Delinquent)
+prop.table(table(train$Delinquent))
+
+
+library(ROSE)
+
+#######  1) Oversampling. 
+#majority class has 972 cases in train. we'll match minority class  equal to majority class, hence N=1944
+df_over = ovun.sample(Delinquent ~ ., data = train, method = "over",N = 1944)$data
+table(df_over$Delinquent)   #Both the classes have same no. of observation (972) now
+
+
+
+ 2) Undersampling.  undersampling is done without replacement. Positive cases is 68 so N=136
+df_under = ovun.sample(Delinquent ~ ., data = train, method = "under",N = 136)$data
+table(df_under$Delinquent)  #Dataset is balanced but we’ve lost significant information from the sample. 
+
+
+ 3) Both Oversampling & Undersampling simultaneously 
+
+# his can be achieved using method = “both“. In this case, the minority class is oversampled with replacement and majority class is
+# undersampled without replacement. train has 1040 observations p refers to the probability of positive class in newly generatedsample
+df_both = ovun.sample(Delinquent ~ ., data = train, method = "both",N = 1040)$data
+table(df_both$Delinquent) #Now negative cases are 559 and positive cases are 481 only
+
+# The data generated above from oversampling have expected amount of repeated observations. Data generated from undersampling is deprived
+# of important information from the original data. This leads to inaccuracies in the resulting performance. To encounter these issues, 
+# ROSE helps us to generate data synthetically as well. The data generated using ROSE is considered to provide better estimate of original data
+
+
+ 4) Synthetically generating data using ROSE algorithm
+df_rose = ROSE(Delinquent ~ ., data = train, seed = 1)$data
+table(df_rose$Delinquent) #df_rose has 1040 observations; same as original train set
+
+
+
+#build randomForest models
+library(randomForest)
+RFover = randomForest(Delinquent ~., data= df_over)
+RFunder = randomForest(Delinquent ~., data= df_under)
+RFboth = randomForest(Delinquent ~., data= df_both)
+RFrose = randomForest(Delinquent ~., data= df_rose)
+
+#Making the prediction on the test set
+pred_RFover = predict(RFover, newdata = test, type = "prob")
+pred_RFunder = predict(RFunder, newdata = test, type = "prob")
+pred_RFboth = predict(RFboth, newdata = test, type = "prob")
+pred_RFrose = predict(RFrose, newdata = test, type = "prob")
+
+fix(pred_RFrose)
+# Area under the curve (AUC): 0.657
+roc.curve(test$Delinquent, pred_RFover[,2])
+
+# Area under the curve (AUC): 0.693
+roc.curve(test$Delinquent, pred_RFunder[,2], add.roc = TRUE, col = "green")
+
+# Area under the curve (AUC): 0.643
+roc.curve(test$Delinquent, pred_RFboth[,2], add.roc = TRUE, col = "red")
+
+# Area under the curve (AUC): 0.728
+roc.curve(test$Delinquent, pred_RFrose[,2], add.roc = TRUE, col = "voilet")
+ 
+ Here the best model is made with Synthetically generating minority class.
+ 
+ 
