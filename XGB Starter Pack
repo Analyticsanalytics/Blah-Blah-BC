@@ -53,7 +53,6 @@ xgb = xgboost(data = trainx,
                seed = 1,
                eval_metric = "auc",
                objective = "binary:logistic",
-               num_class = 2,
                nthread = 3
 )
 
