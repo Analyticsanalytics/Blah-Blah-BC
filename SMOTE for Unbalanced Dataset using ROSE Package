@@ -1,3 +1,8 @@
+  SMOTE generates data using S = Xi + u(X^R - Xi)
+Where u is uniform random variable [0,1]. X^R is nearest nearest neighbour of minority class. Suppose we choose 5 cases(rows) as nearest
+ neighbour, then it will choose one of em from 5 cases (with all feature variables) and subtract with existing cases. Then this value
+ would be multiplied by random uniform number(b/w 0 & 1) and then we'll add it with the existing cases. So, minority class response 
+ label would be same but all other variables with the particular synthasized label would be changed
 
 
 ################   USing pre-processed dataset for SMOTE Algorithm   ###########################
