@@ -59,6 +59,7 @@ xgb = xgboost(data = trainx,
 
 
 # Gain is the improvement in accuracy brought by a feature to the branches it is on
+# More details here:  https://github.com/dmlc/xgboost/blob/master/R-package/vignettes/discoverYourData.Rmd
 importance = xgb.importance(feature_names = colnames(trainx), model = xgb)
 head(importance)
 
