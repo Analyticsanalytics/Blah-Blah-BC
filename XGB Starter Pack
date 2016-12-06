@@ -68,3 +68,6 @@ Pred = predict(xgb, testx)
 summary(Pred)
 table(y1, Pred>=0.5)
 
+
+https://github.com/dmlc/xgboost/blob/master/demo/kaggle-otto/understandingXGBoostModel.Rmd
+
