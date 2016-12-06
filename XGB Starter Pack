@@ -64,3 +64,7 @@ head(importance)
 
 xgb.plot.importance(importance_matrix = importance)
 
+Pred = predict(xgb, testx)
+summary(Pred)
+table(y1, Pred>=0.5)
+
