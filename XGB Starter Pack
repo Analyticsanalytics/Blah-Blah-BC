@@ -1,0 +1,66 @@
+
+
+
+
+rm(list = ls())
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
+df = read.csv(file = "dataset.csv", na.strings = c("", " ", NA))
+colSums(is.na(df))
+names(df)
+
+df[,c(1,4,5)] = NULL
+
+
+
+#Converting the factors into numerical vars since 
+library(Metrics)
+options(na.action="na.pass")
+df1 = model.matrix(~.,df)[,-1]
+dfm = as.data.frame(df1)
+
+
+set.seed(20)
+library(caTools)
+spl = sample.split(dfm$Delinquent, SplitRatio = 0.7)
+train = subset(dfm, spl==TRUE)
+test = subset(dfm, spl==FALSE)
+
+#XGB takes response as a separate vector
+y = train$Delinquent
+y1 = test$Delinquent
+
+#Removing the response from train, else it will start it using as well for tree split
+train$Delinquent = NULL
+test$Delinquent = NULL
+
+#XGB takes only matrices. All the categorical n
+trainx = as.matrix(train)
+testx = as.matrix(test)
+
+library(Matrix)
+library(data.table)
+library(xgboost)
+
+
+# Explaination of all the parameter: https://github.com/dmlc/xgboost/blob/master/doc/parameter.md
+xgb = xgboost(data = trainx, 
+               label = y, 
+               eta = 0.1,
+               max_depth = 15, 
+               nround=25, 
+               subsample = 0.5,
+               colsample_bytree = 0.4,
+               seed = 1,
+               eval_metric = "auc",
+               objective = "binary:logistic",
+               num_class = 2,
+               nthread = 3
+)
+
+
+# Gain is the improvement in accuracy brought by a feature to the branches it is on
+importance = xgb.importance(feature_names = colnames(trainx), model = xgb)
+head(importance)
+
+xgb.plot.importance(importance_matrix = importance)
+
