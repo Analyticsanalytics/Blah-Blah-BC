@@ -68,6 +68,10 @@ Pred = predict(xgb, testx)
 summary(Pred)
 table(y1, Pred>=0.5)
 
+#ROC curve and AUC of the prediction
+library(ROSE)
+roc.curve(y1, Pred)
+
 
 https://github.com/dmlc/xgboost/blob/master/demo/kaggle-otto/understandingXGBoostModel.Rmd
 
