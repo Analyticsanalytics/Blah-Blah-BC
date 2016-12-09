@@ -1,6 +1,8 @@
 
 The unbalanced package implements some of the most well-known sampling and distance-based methods for unbalanced classification task.
 The package has the following functions for solving imbalance issue: ubUnder, ubOver, ubSMOTE,ubCNN, ubTomek, ubOSS, ubENN & ubNCL
+ubUnder, ubOver & ubSMOTE are sampling methods while rest are distance based methods for unbalanced dataset.
+
 Undersampling (ubUnder) removes observations from the majority class while Oversampling (ubOver) latter replicate minority class instances.
 ubSMOTE implements SMOTE, which oversamples minority class by generating synthetic minority examples in the neighborhood of observed ones.
 
