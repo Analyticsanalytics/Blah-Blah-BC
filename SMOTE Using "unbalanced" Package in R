@@ -20,6 +20,7 @@ Neighborhood Cleaning Rule (NCL) (ubNCL) modifies the ENN method by increasing t
 examples which are misclassified by their 3-nearest neighbors. Secondly, the neighbors of each positive examples are found and the ones
 belonging to the majority class are removed.
 
+More info on the above methods is here: http://www.slideshare.net/dalpozz/racing-for-unbalanced-methods-selection
 
 Basic function arguments and their interpretation:
 SMOTE(form, data, perc.over = 200, k = 5, perc.under = 200,learner = NULL, ...)
