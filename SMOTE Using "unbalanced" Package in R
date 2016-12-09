@@ -1,0 +1,96 @@
+
+
+
+
+
+SMOTE(form, data, perc.over = 200, k = 5, perc.under = 200,learner = NULL, ...)
+
+form:      A formula describing the prediction problem
+data:      A data frame containing the original (unbalanced) data set
+perc.over: A number that drives the decision of how many extra cases from the minority class are generated (known as over-sampling).
+k:         A number indicating the number of nearest neighbours that are used to generate the new examples of the minority class.
+perc.under: A number that drives the decision of how many extra cases from the majority classes are selected for each case generated
+            from the minority class (known as under-sampling)
+learner: Optionally you may specify a string with the name of a function that implements a classification algorithm that will be applied
+            to the resulting SMOTEd data set (defaults to NULL).
+
+
+
+##############################    Pre-processing    ################################
+rm(list = ls())
+getwd()
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Sit Visits Data")
+df = read.csv(file = "dataset.csv", na.strings = c("", " ", NA))
+summary(df)
+
+colSums(is.na(df))
+
+#Response variable is unbalanced with 93% Negative (zero cases and 6% positive cases.
+prop.table(table(df$Delinquent))
+
+names(df)
+df[, c(1,4,5)] = NULL
+
+set.seed(20)
+library(caTools)
+spl = sample.split(df$Delinquent, SplitRatio = 0.7)
+train = subset(df, spl==TRUE)
+test = subset(df, spl==FALSE)
+
+
+train$Delinquent = as.factor(train$Delinquent)
+test$Delinquent = as.factor(test$Delinquent)
+table(test$Delinquent)
+table(train$Delinquent)
+##############################################################################################
+
+# We always need to code majority class to zero and minority class to 1.
+output = train$Delinquent
+input = train[, -2]
+output1 = test$Delinquent
+input1 = test[, -2]
+
+
+library(unbalanced)
+
+
+
+###################  Oversampling
+ubover means oversampling. K defines the sampling method. If K=0:, sample with replacement from the minority class until we have the
+ same number of instances in each class. If K>0: sample with replacement from the minority class until we have k-times the orginal
+ number of minority instances. In Y, majority class should be always coded as zero, minority as 1.
+
+data = ubBalance(X=input, Y=output, type="ubOver", k=0)
+overData = data.frame(data$X, Delinquent=data$Y)
+table(overData$Delinquent)
+
+###############    apply undersampling
+# perc is Percentage of sampling. method to perform under sampling ("percPos", "percUnder").
+data = ubBalance(X=input, Y=output, type="ubUnder", perc=50,  method="percPos")
+underData = data.frame(data$X, Delinquent=data$Y)
+table(underData$Deliquent)
+
+
+
+###############    apply SMOTE
+table(output)
+
+percOver(per.over/100) is the number of new instances generated for each rare instance. If perc.over < 100 a single instance is generated
+percUnder(perc.under/100) is the number of "normal" (majority class) instances that are randomly selected for each smoted observation
+Setting perc.over = 100 means doubling the quantity of positive cases, setting perc.under=200 keeping half of what was created as negative
+cases.
+
+balanced = ubBalance(X=input, Y=output, type="ubSMOTE", percOver=300, percUnder=150)
+balTrain = data.frame(balanced$X, Delinquent=balanced$Y)
+summary(balTrain$Delinquent)
+
+rm(balanced, balTrain)
+#use the balanced training set
+library(randomForest)
+model2 = randomForest(Delinquent ~ ., balTrain)
+#predict on the testing set
+preds <- predict(model2, input1, type="class")
+table(output1, preds)
+confusionMatrix2 <- table(prediction=preds, actual=output1)
+print(confusionMatrix2)
+#we can now correctly cla
