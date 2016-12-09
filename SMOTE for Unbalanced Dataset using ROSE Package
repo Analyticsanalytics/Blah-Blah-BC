@@ -3,7 +3,8 @@ Where u is uniform random variable [0,1]. X^R is nearest nearest neighbour of mi
  neighbour, then it will choose one of em from 5 cases (with all feature variables) and subtract with existing cases. Then this value
  would be multiplied by random uniform number(b/w 0 & 1) and then we'll add it with the existing cases. So, minority class response 
  label would be same but all other variables with the particular synthasized label would be changed
-
+The SMOTE function oversamples your rare event by using bootstrapping and k-nearest neighbor to synthetically create additional 
+observations of that event
 
 ################   USing pre-processed dataset for SMOTE Algorithm   ###########################
 
