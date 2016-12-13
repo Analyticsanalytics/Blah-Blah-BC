@@ -37,7 +37,8 @@ learner: Optionally you may specify a string with the name of a function that im
 
 
 PRECISION RECALL: For unbalanced dataset, we mainly seek reduce the false positive and use PR to calculate accuracy. PR = TP/(TP+FP)
-
+Precision: Positive Predicted Value
+Recall: Sensitivity
 
 ##############################    Pre-processing    ################################
 rm(list = ls())
