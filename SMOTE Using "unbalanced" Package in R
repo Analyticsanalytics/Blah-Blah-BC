@@ -113,3 +113,39 @@ table(output1, preds)
 confusionMatrix2 <- table(prediction=preds, actual=output1)
 print(confusionMatrix2)
 #we can now correctly cla
+
+
+
+
+###########     Since There're so many methods to apply, we'll using RACING algorithm to check which one is best   ###############
+###########                          Need to work on this. It's giving error as of now                             ###############
+
+
+set.seed(1234)
+#configuration of the sampling method used in the race
+
+UBC <- list(type="ubUnder", percOver=200, percUnder=200, k=2, perc=50, method="percPos", w=NULL)
+
+# Race with 10 trees in the Random Forest to speed up results
+library(randomForest)
+results <- ubRacing(Delinquent ~., df, "randomForest", positive=1, 
+                    metric="auc", ubConf=UBC, ntree=10)
+
+# Race using 4 cores and 500 trees (default number of trees in randomForest)
+results1 <- ubRacing(Delinquent ~., df, "randomForest", positive=1, 
+                     metric="auc", ubConf=UBC, ncore=4)
+
+
+library(randomForest)
+ubConf <- list(type="ubUnder", percOver=200, percUnder=200, k=2, perc=50, method="percPos", w=NULL)
+results <- ubRacing(Delinquent ~., df, "randomForest", positive=1, ubConf=UBC, ntree=5)
+
+# Let's try with a different algorithm (see mlr package for supported packages)
+library(e1071)
+results2 <- ubRacing(Delinquent ~., df, "svm", positive=1, ubConf=UBC)
+library(rpart)
+results3 <- ubRacing(Delinquent ~., df, "rpart", positive=1, ubConf=UBC)
+
+
+
+
