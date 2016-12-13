@@ -8,7 +8,8 @@ observations of that event
 
 
 PRECISION RECALL: For unbalanced dataset, we mainly seek reduce the false positive and use PR to calculate accuracy. PR = TP/(TP+FP)
-
+Precision: Positive Predicted Value
+Recall: Sensitivity
 
 ################   USing pre-processed dataset for SMOTE Algorithm   ###########################
 
