@@ -6,6 +6,10 @@ Where u is uniform random variable [0,1]. X^R is nearest nearest neighbour of mi
 The SMOTE function oversamples your rare event by using bootstrapping and k-nearest neighbor to synthetically create additional 
 observations of that event
 
+
+PRECISION RECALL: For unbalanced dataset, we mainly seek reduce the false positive and use PR to calculate accuracy. PR = TP/(TP+FP)
+
+
 ################   USing pre-processed dataset for SMOTE Algorithm   ###########################
 
 rm(list = ls())
