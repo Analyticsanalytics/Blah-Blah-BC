@@ -1,3 +1,10 @@
+Some terms in implementation of SVM in R/Python
+Gamma: It’s a coefficient. It’s Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’. Higher the value of gamma, will try to exact fit the
+       as per training data set i.e. generalization error and cause over-fitting problem.The process of choosing SVM parameters
+       e (epsilon) & C (tuning parameter) is called Hyperparameter Optimization or Model Selection.
+The argument scale=FALSE tells the svm() function not to scale each feature to have mean zero or standard deviation one; depending on
+       the application, one might prefer to use scale=TRUE.
+Kernel = “linear” is used for Support Vector Classifier. Kernel = “radial” is used for SVM.
 
 
 rm(list = ls())
