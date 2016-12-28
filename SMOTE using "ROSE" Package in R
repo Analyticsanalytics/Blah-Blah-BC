@@ -1,13 +1,14 @@
   SMOTE generates data using S = Xi + u(X^R - Xi)
-Where u is uniform random variable [0,1]. X^R is nearest nearest neighbour of minority class. Suppose we choose 5 cases(rows) as nearest
- neighbour, then it will choose one of em from 5 cases (with all feature variables) and subtract with existing cases. Then this value
- would be multiplied by random uniform number(b/w 0 & 1) and then we'll add it with the existing cases. So, minority class response 
- label would be same but all other variables with the particular synthasized label would be changed
-The SMOTE function oversamples your rare event by using bootstrapping and k-nearest neighbor to synthetically create additional 
-observations of that event
+Where u is uniform random variable [0,1]. X^R is nearest nearest neighbour of minority class. Suppose we choose 5 cases(rows)
+as nearest neighbour, then it will choose one of em from 5 cases (with all feature variables) and subtract with existingcases.
+Then this value would be multiplied by random uniform number(b/w 0 & 1) and then we'll add it with the existing cases.
+So, minority class response label would be same but all other variables with the particular synthasized label would be 
+changed. The SMOTE function oversamples your rare event by using bootstrapping and k-nearest neighbor to synthetically create
+additional observations of that event
 
 
-PRECISION RECALL: For unbalanced dataset, we mainly seek reduce the false positive and use PR to calculate accuracy. PR = TP/(TP+FP)
+PRECISION RECALL: For unbalanced dataset, we mainly seek reduce the false positive and use PR to calculate accuracy. 
+Precision Recall = TP/(TP+FP)
 Precision: Positive Predicted Value
 Recall: Sensitivity
 
