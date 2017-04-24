@@ -46,18 +46,29 @@ Three tests are conducted for the purpose of factor analysis:
    checks proportion of variance among variables that might be common variance (or correlations).
    KMO value b/w 0.8-1 means sampling is adequate. KMO less than 0.8 is not good and remedial action should be taken.
 
+rm(list = ls())
+setwd("E:\\Sohail Notes\\Datasets")
+list.files()
 
-rm(list=ls())
-df = read.csv("C:\\Users\\sohail.ahmad\\Documents\\tata_final.csv")
+df = read.csv("tata_final.csv")
+names(df)
+sort(colSums(is.na(df)))
 
-#Taking the subset of numerical values for analysis
-df1 = df[,146:172]
-summary(df1)
+df[,colSums(is.na(df)) > 30 ] = NULL #Removing variables with missing values greater than 30.
 
+sapply(df, function(x) class(x))
 
-#Show only columns which have one or more missing values
-M = sapply(df1, function(x) sum(is.na(x)))
-sort(M[M>0], decreasing=TRUE) #Sorting in descending order
+df1 = df[, sapply(df, function(x )is.numeric(x))]
+names(df1)
+
+df[,c("conno", "Row.No")] = NULL
+
+sort(colSums(is.na(df1)))
+
+#Here there are few misssing values. Replacing all missing values from median of their columns
+for(i in 1:ncol(df1)){
+  df1[is.na(df1[,i]), i] = median(df1[,i], na.rm = TRUE)
+}
 
 
 
@@ -74,11 +85,17 @@ plotnScree(nS)      #Drawing a screeplot
 
 
 
-# factanal fn performs maximum-likelihood factor analysis on a covariance matrix or data matrix. The rotation= options include 
-# "varimax", "promax", and "none". Add the option scores="regression" or "Bartlett" to produce factor scores.
+  # factanal fn performs maximum-likelihood factor analysis on a covariance matrix or data matrix. The rotation= options include 
+  # "varimax", "promax", and "none". Add the option scores="regression" or "Bartlett" to produce factor scores.
 fit1 = factanal(df1, factors = 5, rotation = "varimax", scores="regression")
-#  Sometimes this may give error that its unable to optimize. In that case add agrgument"control=list(lower=0.000001)" 
+  # Sometimes this may give error that its unable to optimize. In that case add agrgument"control=list(lower=0.000001)" 
   #inside factanal. if it doesnt work yet, try diff values of lower.
+
+# For my problem control=list(lower=0.00000001)) gave results. Afterwards, it turned out that I had some variables with
+# very low values of uniqueness. So it might be that you have created 4 dummies from a factor with 4 levels, thereby creating redundancy.
+# So my tips: 1. Play with the lower argument 2. once it works, check which variables have a very low uniqueness, take them out of the
+# dataframe & run the factor analysis again
+
 
 colnames(fit1$loadings) = c("Fac_1","Fac_2","Fac_3","Fac_4","Fac_5")
 print(loadings(fit1), digits=2, cutoff=.2, sort=TRUE) 
