@@ -12,7 +12,65 @@ Few Things to note in hierarchical clustering
 
  2. Data Scaling: If variables have diff scales, we can use caret package to normalize variables by subtracting by the mean and dividing by
    the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well
- 3. Handling Categorical variables: We can create binary dummies but can't be sure if it would work quite well enough. It's conditional
+ 3. Handling Categorical variables: We can create binary dummies but can't be sure if it would work quite well enough. It's conditional;
+    may not always work for all datasets.
+    There is another way though: Within the R package cluster there is ?daisy which will create a dissimilarity matrix for mixed data 
+    (Gower similarity coefficient). Then you can use ?agnes or other clustering functions. 
+     Link for the same: https://stats.stackexchange.com/questions/24540/clustering-of-mixed-type-data-with-r
+
+
+
+#HEre Chargeoff_Flag is our variable of interest. It is binary. We wanna see if we can correctly classify to all the true lables of
+# CHargeoff_Flag in one of the clusters
+rm(list = ls())
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Charge-off Pattern")
+list.files()
+df = read.csv("data1.csv")
+str(df)
+names(df)
+#Removing the unnecessary variables
+df[,c(1:4,6,7,11,13,24,25)] = NULL
+colSums(is.na(df))
+
+#One hot encoding for categorical variables
+library(Metrics)
+options(na.action="na.pass") #It will also include NA & blank values in the matrix, else they'll be erased from matrix upon conversion
+df1 = model.matrix(~.,df)[,-1]
+df1 = as.data.frame(df1) #Making data frame of the matrix
+
+#Since data has different scale for diff variables, we would standardize using caret. caret package normalizes variables by subtracting
+ #by the mean and dividing by the standard deviation. HEre the transformed data would be in the interval [0,1]
+library(caret)
+preproc = preProcess(df1)
+df2 = predict(preproc, df1)
+
+#Converting the data into distance matrix. FOr a dataset with n observations, it'll create n*n matrix
+#If we do not mention any method, it will still take euclidean distance
+distances = dist(df2, method = "euclidean")
+
+# the hclust function in R uses the complete linkage method for hierarchical clustering by default
+# Here we've choses average method instead. We can also choose "single", "complete", "mean" or "Ward.D"
+hc = hclust(distances, method = "average")
+plot(hc)
+
+hcGroups = cutree(hc, k=3)
+
+table(hcGroups)
+
+#CHecking how chargeoff_flag has been assigned. THis variable is of our interest
+table(hcGroups, df2$Chargeoff_Flag)
+
+
+#Creating different subsets for clusters
+set1 = subset(df2, hcGroups==1)
+set2 = subset(df2, hcGroups==2)
+set3 = subset(df2, hcGroups==3)
+
+# #This computes the mean frequency values of each of the elements in cluster 1, and then outputs
+#the 6 elements that occur the most frequently
+tail(sort(colMeans(set1)))
+tail(sort(colMeans(set2)))
+tail(sort(colMeans(set3)))
 
 
 
