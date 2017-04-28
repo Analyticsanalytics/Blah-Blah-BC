@@ -53,6 +53,7 @@ distances = dist(df2, method = "euclidean")
 hc = hclust(distances, method = "average")
 plot(hc)
 
+#Cutting the tree
 hcGroups = cutree(hc, k=3)
 
 table(hcGroups)
