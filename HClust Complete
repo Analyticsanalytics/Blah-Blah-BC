@@ -6,9 +6,9 @@ Few Things to note in hierarchical clustering
  1.Types of dissimilarity linkages available for hclust
    A. Complete Linkage clustering: Find the maximum possible distance between points belonging to two different clusters.
    B. Single linkage clustering: Find the minimum possible distance between points belonging to two different clusters.
-   C. Mean linkage : Find all possible pairwise distances for points belonging to two different clusters and then calculate the average.
+   C. Mean linkage: Find all possible pairwise distances for points belonging to two different clusters and then calculate the average.
    D. Centroid linkage clustering: Find the centroid of each cluster and calculate the distance between centroids of two clusters.
-   E. Ward Method ("Ward.D"): it tries to minimize the variance within each cluster and the distance among clusters
+   E. Ward Method ("ward.D"): it tries to minimize the variance within each cluster and the distance among clusters
 
  2. Data Scaling: If variables have diff scales, we can use caret package to normalize variables by subtracting by the mean and dividing by
    the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well
@@ -50,7 +50,7 @@ distances = dist(df2, method = "euclidean")
 
 # the hclust function in R uses the complete linkage method for hierarchical clustering by default
 # Here we've choses average method instead. We can also choose "single", "complete", "mean" or "Ward.D"
-hc = hclust(distances, method = "average")
+hc = hclust(distances, method = "ward.D")
 plot(hc)
 
 #Cutting the tree
