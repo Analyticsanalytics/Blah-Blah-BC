@@ -11,7 +11,9 @@ Few Things to note in hierarchical clustering
    E. Ward Method ("ward.D"): it tries to minimize the variance within each cluster and the distance among clusters
 
  2. Data Scaling: If variables have diff scales, we can use caret package to normalize variables by subtracting by the mean and dividing by
-   the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well
+   the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well. FOr
+   e.g scale(df,...) will also scale the variables. Check ?scale for more info
+   
  3. Handling Categorical variables: We can create binary dummies but can't be sure if it would work quite well enough. It's conditional;
     may not always work for all datasets. Categorical vars yet can be used in Hierarchical but never in K-Means Clusters
     There is another way though: Within the R package cluster there is ?daisy which will create a dissimilarity matrix for mixed data 
