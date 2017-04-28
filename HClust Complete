@@ -13,7 +13,7 @@ Few Things to note in hierarchical clustering
  2. Data Scaling: If variables have diff scales, we can use caret package to normalize variables by subtracting by the mean and dividing by
    the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well
  3. Handling Categorical variables: We can create binary dummies but can't be sure if it would work quite well enough. It's conditional;
-    may not always work for all datasets.
+    may not always work for all datasets. Categorical vars yet can be used in Hierarchical but never in K-Means Clusters
     There is another way though: Within the R package cluster there is ?daisy which will create a dissimilarity matrix for mixed data 
     (Gower similarity coefficient). Then you can use ?agnes or other clustering functions. 
      Link for the same: https://stats.stackexchange.com/questions/24540/clustering-of-mixed-type-data-with-r
