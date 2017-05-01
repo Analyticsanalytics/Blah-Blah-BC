@@ -59,6 +59,7 @@ test = test[, -c(1,4,5)]
 
 table(train$Delinquent)
 
+#if do.trace=T, then it gives a more verbose output as randomForest is run. imp=T means shoudl the importance of vars be printed
 library(randomForest)
 rf = randomForest(Delinquent ~., data = train, ntree=80, imp=TRUE, mtry=4, do.trace=TRUE)
 summary(rf)
