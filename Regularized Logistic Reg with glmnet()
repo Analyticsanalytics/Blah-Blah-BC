@@ -1,0 +1,35 @@
+
+df = read.csv("data.csv")
+set.seed(100)
+spl = sample(nrow(df), 0.7 * nrow(df))
+train = df[spl,]
+test = df[-spl,]
+
+
+names(train)
+library(Metrics)
+trainx = model.matrix(chargoff_Flag~., data=train)[,-1]
+testx = model.matrix(chargoff_Flag~., data=test)[,-1]
+y = as.numeric(train$chargoff_Flag)
+
+
+# Fitting the model (Ridge: Alpha = 0)
+library(glmnet)
+set.seed(999)
+cv.ridge <- cv.glmnet(trainx, y, family='binomial', alpha=1, standardize=TRUE, type.measure='auc')
+
+# Results
+plot(cv.ridge)
+cv.ridge$lambda.min
+cv.ridge$lambda.1se
+coef(cv.ridge, s=cv.ridge$lambda.min)
+
+bestlam = cv.ridge$lambda.min
+
+
+ridge.pred = predict(cv.ridge ,s=bestlam, newx=testx, type="response")
+summary(ridge.pred)
+table(test$chargoff_Flag, ridge.pred >0.3)
+
+library(ROSE)
+roc.curve(test$chargoff_Flag, ridge.pred)
