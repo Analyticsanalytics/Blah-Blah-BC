@@ -27,9 +27,11 @@ coef(cv.ridge, s=cv.ridge$lambda.min)
 bestlam = cv.ridge$lambda.min
 
 
-ridge.pred = predict(cv.ridge ,s=bestlam, newx=testx, type="response")
+ridge.pred = predict(cv.ridge ,s=bestlam, newx=testx, type="response") # We can use type="class" for classification
 summary(ridge.pred)
 table(test$chargoff_Flag, ridge.pred >0.3)
 
 library(ROSE)
 roc.curve(test$chargoff_Flag, ridge.pred)
+
+More here: https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html
