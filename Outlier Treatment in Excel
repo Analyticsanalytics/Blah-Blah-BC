@@ -1,0 +1,17 @@
+
+
+Q1 = =QUARTILE.EXC(A2:A5156,1), Q3 = =QUARTILE.EXC(A2:A5156,3), IQR = Q3- Q1, Lower Bound = Q1 - 1.5*IQR, Upper Bound = Q3 + 1.5*IQR
+95th Percentile = =PERCENTILE.EXC(A2:A5156,0.95)
+
+Now We'll look at the value of 95th percentile and Upper Bound. If both the values are somwewhat nearby, we can replace all the values 
+greater than by Upper Bound with the 95th percentile.
+If the 95th percentile & upper bound are significantly different and 95th perc is way bigger than upper bound, then we'll look at the
+90th percentile and and replace with 90th perce if both are somwehat nearby. and so on.
+If Upper Bound is greater than 95th percentile, then we;ll replace it with 98th percentile instead
+
+Also, values which are lesser than lower bound are replaced by 5th percentile.
+So basically this is (5th, 95th) percentile capping.
+
+The rule of thumb is, it depends upon the requirements. ALways use logic and see if it makes sense in this situation
+
+
