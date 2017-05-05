@@ -1,14 +1,5 @@
 
 
-With Information package, Indepedent categorical vars need to be stored as factors. Binary depedent var has to be stored as NUMERIC.
-
-library(Information)
-IV.out <- Information::create_infotables(data=df2, y= "RR_Cat1", parallel=FALSE)
-out<-capture.output(print(IV.out)) # Capture the output
-print(IV.out$Tables$N_OPEN_REV_ACTS, row.names=FALSE)
-print(IV.out)
-
-
 IMPORTANT POINTS ON WOE AND INFORMATION VALUES
 WOE = Log( %g eof non-events/% of of events); Info Value = ( % of non-events - % of events)*WOE
 
@@ -26,27 +17,61 @@ smoothing - the fewer bins, the more smoothing. If someone asks you ' "why not t
 important patterns in the data, while leaving out noise. Bins with less than 5% cases might not be a true picture of the data distribution
 and might lead to model instability.
 
-
-
 How to check correct binning with WOE
-  1. The WOE should be monotonic i.e. either growing or decreasing with the bins. You can plot WOE values and check linearity on the graph
-  2. Perform the WOE transformation after binning. Next, we run logistic regression with 1 independent variable having WOE values. If the
+  1. The WOE should be monotonic i.e. either growing or decreasing with the bins. You can plot WOE values & check linearity on the graph
+  2. Perform the WOE transformation after binning. Next, we run logistic regression with 1 independent variab having WOE values. If the
      slope is not 1 or the intercept is not ln(% of non-events / % of events) then the binning algorithm is not good. 
      
-     
- If the IV statistic is:
+If the IV statistic is:
    1) Less than 0.02, then the predictor is not useful for modeling (separating the Goods from the Bads)
    2) 0.02 to 0.1, then the predictor has only a weak relationship to the Goods/Bads odds ratio
    3) 0.1 to 0.3, then the predictor has a medium strength relationship to the Goods/Bads odds ratio
    4) 0.3 to 0.5, then the predictor has a strong relationship to the Goods/Bads odds ratio.
    5) Greater than 0.5, suspicious relationship (Check once)
-   
-   
+    
 Important Points
   1) Information value increases as bins / groups increases for an independent variable. Be careful when there are more than 20 bins as
     some bins may have a very few number of events and non-events.
   2) Information value should not be used as a feature selection method when you are building a classification model other than binary
     logistic regression (for eg. random forest or SVM) as it's designed for binary logistic regression model only.
     
+
+
+###############################   CODE ###########################################
+
+With Information package, Indepedent categorical vars need to be stored as factors. Binary depedent var has to be stored as NUMERIC.
+
+rm(list = ls())
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\BA Score Good Bad Loans")
+df = read.csv("Mofo.csv")
+names(df)
+df[,c(1:4,5,7,8,18:24)] = NULL
+sapply(df, function(x) class(x))
+
+library(Information)
+
+#HEre RR_Cat is response var. Parallel means if we wanna do parrelal computing
+# if the variable has missing values, the WOE table will contain a separate “NA” row which can
+# be used to gauge the impact of missing values.
+IV = create_infotables(data=df, y="RR_cat", bins=20, parallel=FALSE)
+
+#THis list contains IV values of dependent vars
+IV_Value = data.frame(IV$Summary)
+fix(IV_Value)
+
+print(IV$Tables$ageofbuss.At.underwriting, row.names=FALSE)
+print(IV$Tables$BA.At.underwriting, row.names=FALSE)
+print(IV$Tables$anurevenue.At.underwriting, row.names=FALSE)
+
+
+#To save it in a data frame, you can run the command below- 
+BA = data.frame(IV$Tables$BA.At.underwriting)
+
+# To see trend of WOE variables, you can plot them by using plot_infotables function.
+plot_infotables(IV, "BA.At.underwriting", show_values = TRUE)
+
+
+#To generate multiple charts on one page, you can run the following command -
+plot_infotables(IV, IV$Summary$Variable[1:3], same_scale=FALSE)
 
 
