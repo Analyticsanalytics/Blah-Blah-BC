@@ -1,5 +1,7 @@
 
 
+With Information package, Indepedent categorical vars need to be stored as factors. Binary depedent var has to be stored as NUMERIC.
+
 library(Information)
 IV.out <- Information::create_infotables(data=df2, y= "RR_Cat1", parallel=FALSE)
 out<-capture.output(print(IV.out)) # Capture the output
