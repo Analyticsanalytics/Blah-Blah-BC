@@ -118,6 +118,12 @@ NagelkerkeR2(Model)
 library(pscl)
 pR2(Model)  #Look for McFadden. It's psuedo R squared. G2 is -2Log Likelihood here
 
+# KS Test. looks at how the distribution of the score differs among goods and bads in scorecards. KS stats should be b/w o.4-0.7
+# The higher the ks_stat more effective is the model at capturing the responders. It looks at maximum difference between
+# distribution of cumulative events and cumulative non-events.
+library(InformationValue)
+ks_tst = ks_stat(Test$RS_Binary, Pred)
+
 ### Calculate tpr and fpr now
 
 #TPR or Sensitivity. It goes up with lower threshold value
