@@ -63,15 +63,19 @@ print(IV$Tables$ageofbuss.At.underwriting, row.names=FALSE)
 print(IV$Tables$BA.At.underwriting, row.names=FALSE)
 print(IV$Tables$anurevenue.At.underwriting, row.names=FALSE)
 
-
-#To save it in a data frame, you can run the command below- 
-BA = data.frame(IV$Tables$BA.At.underwriting)
-
 # To see trend of WOE variables, you can plot them by using plot_infotables function.
 plot_infotables(IV, "BA.At.underwriting", show_values = TRUE)
 
 
 #To generate multiple charts on one page, you can run the following command -
 plot_infotables(IV, IV$Summary$Variable[1:3], same_scale=FALSE)
+
+#To save it in a data frame, you can run the command below- 
+BA = data.frame(IV$Tables$BA.At.underwriting)
+
+#Here we can't use cbind() since all the dataframes do not have equal rows. plyr will simply create NAs for dataframes with lesser rows
+library(plyr)
+combined <- rbind.fill(AgeBuss, AnnRev, AvgNSF, BA, DTI, OpEX, PCS)
+write.csv(combined, "20 Bins IV.csv", row.names = FALSE)
 
 
