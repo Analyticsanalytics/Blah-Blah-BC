@@ -1,7 +1,7 @@
 
 
 IMPORTANT POINTS ON WOE AND INFORMATION VALUES
-WOE = Log( %g eof non-events/% of of events); Info Value = ( % of non-events - % of events)*WOE
+        WOE = Log( %g eof non-events/% of of events);                    Info Value = ( % of non-events - % of events)*WOE
 
 Rules related to WOE
   -Each category (bin) should have at least 5% of the observations.
