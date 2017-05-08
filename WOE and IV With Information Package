@@ -54,6 +54,7 @@ library(Information)
 # if the variable has missing values, the WOE table will contain a separate “NA” row which can
 # be used to gauge the impact of missing values.
 IV = create_infotables(data=df, y="RR_cat", bins=20, parallel=FALSE)
+print(head(IV$Summary), row.names=FALSE)
 
 #THis list contains IV values of dependent vars
 IV_Value = data.frame(IV$Summary)
