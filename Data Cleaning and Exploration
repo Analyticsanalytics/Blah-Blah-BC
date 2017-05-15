@@ -15,12 +15,9 @@ sort(M[M>0], decreasing=TRUE) #Sorting in descending order
 
 #Remove all the columns which have over 4k missing values
 df[colSums(is.na(df)) > 4000]  = NULL
-fix(df)
 
----
-#Taking the subset of numerical values for analysis
-df1 = df[,147:176]
-summary(df1)
+
+
 
 #Imputation of max_od with the mean value
 me = mean(df1$max_od, na.rm=TRUE)
@@ -43,10 +40,9 @@ pcap <- function(x){
 df2 = pcap(df1)
 summary(df2$Principal_Outstanding_Apr16)
 
-library(pls)
-set.seed (2)
-pcr.fit = pcr(Principal_Outstanding_Apr16~., data=df1, scale=TRUE, validtion= "CV")
-summary(pcr.fit)
-validationplot(pcr.fit ,val.type= "MSEP")
+#################   CROSS TABULATION    ###################
 
-pcr.fit1 = pcr(Principal_Outstanding_Apr16~., data=df1, scale =TRUE ,ncomp =10)
+library(gmodels
+CrossTable(df$Frequency, df$Chargeoff_Flag)
+
+
