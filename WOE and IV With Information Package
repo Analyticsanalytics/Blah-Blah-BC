@@ -73,10 +73,18 @@ plot_infotables(IV, IV$Summary$Variable[1:3], same_scale=FALSE)
 
 #To save it in a data frame, you can run the command below- 
 BA = data.frame(IV$Tables$BA.At.underwriting)
+PCS = data.frame(IV$Tables$creditscore.At.underwriting)
+DTI = data.frame(IV$Tables$dtiratio.At.underwriting)
+AgeBuss = data.frame(IV$Tables$ageofbuss.At.underwriting)
+AnnRev = data.frame(IV$Tables$anurevenue.At.underwriting)
+OpEX = data.frame(IV$Tables$operatingexp.At.underwriting)
+AvgNSF = data.frame(IV$Tables$avgnsf.At.underwriting)
+
+
 
 #Here we can't use cbind() since all the dataframes do not have equal rows. plyr will simply create NAs for dataframes with lesser rows
 library(plyr)
-combined <- rbind.fill(AgeBuss, AnnRev, AvgNSF, BA, DTI, OpEX, PCS)
+combined <- rbind.fill(BA, PCS, DTI, AgeBuss, AnnRev, OpEX, AvgNSF)
 write.csv(combined, "20 Bins IV.csv", row.names = FALSE)
 
 
