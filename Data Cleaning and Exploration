@@ -19,7 +19,7 @@ df[colSums(is.na(df)) > 4000]  = NULL
 
 
 
-#Imputation of max_od with the mean value
+###############    Imputation of max_od with the mean value    #################
 me = mean(df1$max_od, na.rm=TRUE)
 df1$max_od[is.na(df1$max_od)] = 0
 df1$max_od[df1$max_od == 0] = me
@@ -44,5 +44,25 @@ summary(df2$Principal_Outstanding_Apr16)
 
 library(gmodels
 CrossTable(df$Frequency, df$Chargeoff_Flag)
+
+
+
+########################     CORRELATION MATRIX     ############################
+
+df_num = df[,sapply(df, function(x) is.numeric(x))]
+z = cor(df_num)
+zdf = as.data.frame(as.table(z))  #COnverting matrix into table and then dataframe
+zdf1 = subset(zdf, abs(Freq) > 0.5)  #Only taking values that are greater than absolute 0.5
+zdf2 = subset(zdf1, abs(Freq) !=1)  #Removing correlation equal to since it is correlation of the same variable
+
+
+
+
+
+
+
+
+
+
 
 
