@@ -12,6 +12,12 @@ Factor Analysis tries to find hidden variables which affect your observed variab
 We use Factor Analysis to remove the problem of multicollinearity in the data and convert high-dimensional data into low-dimension.
 The factors in FA are the weights of diff variables together. Factors are calculated from correlation matrix.
 
+Factor Analysis is of three types:
+      A) Exploratory FA: We explore for the nmber of possible factors
+      B) Conf
+
+
+
 Few Terms Explained:
 FACTOR LOADINGS: Factor loading is basically the correlation coefficient for the variable and factor.  
 EIGEN-VALUES: Eigenvalues is also called characteristic roots.  Eigenvalues shows variance explained by that particular factor out of 
