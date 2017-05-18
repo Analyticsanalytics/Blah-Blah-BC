@@ -47,8 +47,13 @@ CrossTable(df$Frequency, df$Chargeoff_Flag)
 
 
 
-########################     CORRELATION MATRIX     ############################
+########################     MULTICOLLINEARITY CHECK     ############################
 
+We use VIF (variance inflation factors) and eigen values to check the multicollinearity in linear and logistic model
+We can use correlation to check pairwise multicollineairty amongs variables
+
+
+# Creating Correlation Matrix
 df_num = df[,sapply(df, function(x) is.numeric(x))]
 z = cor(df_num)
 zdf = as.data.frame(as.table(z))  #COnverting matrix into table and then dataframe
