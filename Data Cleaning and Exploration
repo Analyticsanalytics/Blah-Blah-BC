@@ -31,6 +31,13 @@ If the data doesnt follow the MAR, MICE will give out biased results. MICe autom
 How does it work? Lets say there is a column AA which has missing values. Then MICE will run regression (logistic/linear) and use AA
 as response and rest of the vars as features and then the missing values of AA will be replaced by predicted values. This is now done
 for all the variables and we get imputed values.
+
+Precisely, the methods used by this package are:
+   --PMM (Predictive Mean Matching)  – For numeric variables
+   --logreg(Logistic Regression) – For Binary Variables( with 2 levels)
+   --polyreg(Bayesian polytomous regression) – For Factor Variables (>= 2 levels)
+   --Proportional odds model (ordered, >= 2 levels)
+
 In R:  library(mice);  imputed_df = complete(mice(df))
 
 
