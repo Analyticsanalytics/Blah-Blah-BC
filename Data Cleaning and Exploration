@@ -19,16 +19,23 @@ df[colSums(is.na(df)) > 4000]  = NULL
 
 
 
-###############    Imputation of max_od with the mean value    #################
-me = mean(df1$max_od, na.rm=TRUE)
-df1$max_od[is.na(df1$max_od)] = 0
-df1$max_od[df1$max_od == 0] = me
-summary(df1$max_od)
+###################    Imputation: Mean Value and MICE    ###########################
 
-scatter.smooth(df1$Principal_Outstanding_Apr16)
-summary(df1$Principal_Outstanding_Apr16)
+####  Imputation of max_od with the mean value
+df1$max_od[is.na(df1$max_od)] = mean(df1$max_od, na.rm=TRUE)
 
-####  OUTLIER TREATMENT. Capping extreme values at 5% and 95%
+MICE: Multivariate Imputation of Chained Equation. It works only when the data is MAR (missing at random). IN MAR, we assume that
+the missing data depends upon the observed values and not on unobserved values. We can test the MAR using Little's Test of randomness
+If the data doesnt follow the MAR, MICE will give out biased results. MICe automatically run Little's test and does 5 step imputation.
+
+How does it work? Lets say there is a column AA which has missing values. Then MICE will run regression (logistic/linear) and use AA
+as response and rest of the vars as features and then the missing values of AA will be replaced by predicted values. This is now done
+for all the variables and we get imputed values.
+In R:  library(mice);  imputed_df = complete(mice(df))
+
+
+
+#######################       OUTLIER TREATMENT. Capping extreme values at 5% and 95%      ###############################
 pcap <- function(x){
   for (i in which(sapply(x, is.numeric))) {
     quantiles <- quantile( x[,i], c(.05, .95 ), na.rm =TRUE)
@@ -47,7 +54,7 @@ CrossTable(df$Frequency, df$Chargeoff_Flag)
 
 
 
-########################     MULTICOLLINEARITY CHECK     ############################
+############################        MULTICOLLINEARITY CHECK     ####################################
 
 We use VIF (variance inflation factors) and eigen values to check the multicollinearity in linear and logistic model
 We can use correlation to check pairwise multicollineairty amongs variables
