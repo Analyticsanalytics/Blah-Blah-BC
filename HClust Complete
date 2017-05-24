@@ -10,8 +10,8 @@ Few Things to note in hierarchical clustering
    D. Centroid linkage clustering: Find the centroid of each cluster and calculate the distance between centroids of two clusters.
    E. Ward Method ("ward.D"): it tries to minimize the variance within each cluster and the distance among clusters
 
- 2. Data Scaling: If variables have diff scales, we can use caret package to normalize variables by subtracting by the mean and dividing by
-   the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well. FOr
+ 2. Data Scaling: If variables have diff scales, we can use caret package to normalize variables by subtracting by the mean and dividing
+   by the standard deviation.The transformed data would be in the interval [0,1]. We can use any other scaling technique as well. FOr
    e.g scale(df,...) will also scale the variables. Check ?scale for more info
    
  3. Handling Categorical variables: We can create binary dummies but can't be sure if it would work quite well enough. It's conditional;
@@ -20,6 +20,14 @@ Few Things to note in hierarchical clustering
     (Gower similarity coefficient). Then you can use ?agnes or other clustering functions. 
      Link for the same: https://stats.stackexchange.com/questions/24540/clustering-of-mixed-type-data-with-r
 
+4. HANDLING VARIABLES WITH HIGH CORRELATION IN CLUSTERING: It's all conditional.
+   A) If there are huge no. of vars with high/medium correlation, we can use PCA and use its components which are fewer
+   B) If there fewer vars for clustering with high/medium correlation, we may consider not dropping them. For. e.g lets say there are
+      two vars A & B which are highlyc correlated. If both are used, they will essentially behave in same manner and direction and the
+      results would be same whether we use or or other or the both.
+   C) If vars are somewhat correlated, make three clsuters; one with only correlated vars, one with non-correlate vars and one with
+      all the vars and compare your results.   More on this link   http://bit.ly/2ryYb2O
+      
 
 
 #HEre Chargeoff_Flag is our variable of interest. It is binary. We wanna see if we can correctly classify to all the true lables of
