@@ -62,17 +62,28 @@ CrossTable(df$Frequency, df$Chargeoff_Flag)
 
 
 ############################        MULTICOLLINEARITY CHECK     ####################################
+We can check multicollinearity by three methods for logistic & linear regression:
+  1) Variance Inflation Factors
+  2) Pairwise Multi-Collinearity
+  3) Eigenvalues and Eigenvectors
 
-We use VIF (variance inflation factors) and eigen values to check the multicollinearity in linear and logistic model
-We can use correlation to check pairwise multicollineairty amongs variables
+1) Variance Inflation Factors: Variance inflation factors (VIF) measure how much the variance of the estimated regression coefficients
+   are inflated as compared to when the predictor variables are not linearly related. Use to describe how much multicollinearity
+   (correlation between predictors) exists in a regression analysis. VIF = 1/(1-Rj^2) where R is Correlation
+    In R. library(car), vif(Model)
+
+2) Pairwise Multicollinearuty: We 1st take the subset of numerical vsrs and get correlation matrix
+      # Creating Correlation Matrix in R
+   df_num = df[,sapply(df, function(x) is.numeric(x))]
+   z = cor(df_num)
+   zdf = as.data.frame(as.table(z))  #COnverting matrix into table and then dataframe
+   zdf1 = subset(zdf, abs(Freq) > 0.5)  #Only taking values that are greater than absolute 0.5
+   zdf2 = subset(zdf1, abs(Freq) !=1)  #Removing correlation equal to since it is correlation of the same variable
+
+3) Eigenvalues and Eigenvalues:
 
 
-# Creating Correlation Matrix
-df_num = df[,sapply(df, function(x) is.numeric(x))]
-z = cor(df_num)
-zdf = as.data.frame(as.table(z))  #COnverting matrix into table and then dataframe
-zdf1 = subset(zdf, abs(Freq) > 0.5)  #Only taking values that are greater than absolute 0.5
-zdf2 = subset(zdf1, abs(Freq) !=1)  #Removing correlation equal to since it is correlation of the same variable
+
 
 
 
