@@ -113,7 +113,8 @@ df3 = complete(mice(df2[,-c(4)]))
 colnames(df3)[4:10] = c("Impute0", "Impute1", "Impute2", "Impute3", "Impute4", "Impute5","Impute6")
 df_Final = cbind(df2, df3)
 
-
+#I have a dataset "draw"of 1000s of rows of withdrawals, I would like to keep only those withdrwalas which have deposit values, then
+dfd = draw[draw$DealId %in% df_Final$DealId, ] #It will include only those rows which are there in the df_Final dataset
 
 
 
