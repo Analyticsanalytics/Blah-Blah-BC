@@ -84,9 +84,34 @@ We can check multicollinearity by three methods for logistic & linear regression
 
 
 
+###################     REMOVING ROWS ON CERTAIN CONDITIONS    ###############################
 
+library(xlsx)
+df = read.xlsx("Monthly Bank Summary..xlsx", sheetIndex = 2)
 
+# Columns 11 onwards, most of the values are missing. Deleteing them
+colSums(is.na(df))
+df[,c(11:20)] = NULL
 
+# Here if a variables has values less than 20, we consider it as missing. SInce values less than 20 are incorrectly included
+df$monthlyDeposits0[df$monthlyDeposits0 < 20] = NA
+df$monthlyDeposits1[df$monthlyDeposits1 < 20] = NA
+df$monthlyDeposits2[df$monthlyDeposits2 < 20] = NA
+df$monthlyDeposits3[df$monthlyDeposits3 < 20] = NA
+df$monthlyDeposits4[df$monthlyDeposits4 < 20] = NA
+df$monthlyDeposits5[df$monthlyDeposits5 < 20] = NA
+
+# Creating a new variables MissingVal which takes as the count of missing values in a row
+df$MissingVal = rowSums(is.na(df))
+table(df2$MissingVal)
+
+# Removing all the rows which have MissingVal as either 5 or 6.
+df2 = subset(df, MissingVal!=6 & MissingVal!=5)
+
+library(mice)
+df3 = complete(mice(df2[,-c(4)]))
+colnames(df3)[4:10] = c("Impute0", "Impute1", "Impute2", "Impute3", "Impute4", "Impute5","Impute6")
+df_Final = cbind(df2, df3)
 
 
 
