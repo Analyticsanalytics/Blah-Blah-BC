@@ -49,7 +49,9 @@ library(xgboost)
 
 
 # Explaination of all the parameter: https://github.com/dmlc/xgboost/blob/master/doc/parameter.md
-nround is the max no. of iterations or no. of trees to be added to the model.
+# eta is [default=0.3, alias: learning_rate]step size shrinkage; used in update to prevents overfitting.
+# max_dpeth is the maximum depth of a tree
+# nround is the max no. of iterations or no. of trees to be added to the model.
 # subsample is ratio of the training instance. Setting it to 0.5 means that XGBoost randomly collected half of the data instances to
 # grow trees and this will prevent overfitting. colsample_bytree [default=1] is subsample ratio of columns when constructing each tree.
 # nthread [default to maximum number of threads available if not set] is the number of parallel threads used to run xgboost
