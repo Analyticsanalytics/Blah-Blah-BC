@@ -44,6 +44,9 @@ library(xgboost)
 
 # Explaination of all the parameter: https://github.com/dmlc/xgboost/blob/master/doc/parameter.md
 nround is the max no. of iterations.
+# subsample is ratio of the training instance. Setting it to 0.5 means that XGBoost randomly collected half of the data instances to
+# grow trees and this will prevent overfitting. colsample_bytree [default=1] is subsample ratio of columns when constructing each tree.
+# nthread [default to maximum number of threads available if not set] is the number of parallel threads used to run xgboost
 xgb = xgboost(data = trainx, 
                label = y, 
                eta = 0.1,
