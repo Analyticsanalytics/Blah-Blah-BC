@@ -43,6 +43,7 @@ library(xgboost)
 
 
 # Explaination of all the parameter: https://github.com/dmlc/xgboost/blob/master/doc/parameter.md
+nround is the max no. of iterations.
 xgb = xgboost(data = trainx, 
                label = y, 
                eta = 0.1,
