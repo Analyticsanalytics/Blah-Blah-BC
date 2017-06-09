@@ -28,6 +28,9 @@ test = subset(dfm, spl==FALSE)
 #XGB takes response as a separate vector
 y = train$Delinquent
 y1 = test$Delinquent
+y = as.numeric(y)
+y = y-1  #After converting to numeric, it wud be in 1,2 form. so we deduct 1 to make it 0,1 
+y1 = y1-1
 
 #Removing the response from train, else it will start it using as well for tree split
 train$Delinquent = NULL
