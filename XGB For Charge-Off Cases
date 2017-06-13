@@ -1,0 +1,83 @@
+
+
+###################    Precision 72.4%. AUC is 84.5%    ###############################
+
+rm(list = ls())
+setwd("C:\\Users\\sohail.ahmad\\Desktop\\Charge-off Pattern\\New_22nd May")
+list.files()
+df1 = read.csv("Final_1st June.csv")
+
+names(df1)
+df = df1[,c(3:5,7,11)]
+
+colSums(is.na(df))
+
+df = na.omit(df)
+
+df$Chargeoff_Status = as.factor(df$Chargeoff_Status)
+set.seed(100)
+spl = sample(nrow(df), 0.7*nrow(df))
+train = df[spl,]
+test = df[-spl,]
+
+
+library(DMwR)
+set.seed(100)
+train1 = SMOTE(Chargeoff_Status ~ ., train, perc.over = 100, perc.under=300)
+table(train1$Chargeoff_Status)
+table(test$Chargeoff_Status)
+
+train1$Chargeoff_Status = as.numeric(train1$Chargeoff_Status)
+test$Chargeoff_Status = as.numeric(test$Chargeoff_Status)
+y = train1$Chargeoff_Status
+y1 = test$Chargeoff_Status
+y = y-1
+y1 = y1-1
+train1$Chargeoff_Status = NULL
+test$Chargeoff_Status = NULL
+
+trainx = as.matrix(train1)
+testx = as.matrix(test)
+
+library(Matrix)
+library(data.table)
+library(xgboost)
+
+#Here The output that it'll giveis the classification error on the training data set.
+set.seed(100)
+
+# nround at 88 has the minm error rate
+cv.res = xgb.cv(data = trainx, nfold = 5, label = y, nround = 100,
+                objective = "binary:logistic", eval_metric = "error")
+
+xgb = xgboost(data = trainx, 
+              label = y, 
+              eta = 0.2,
+              max_depth = 8, 
+              nround=88, 
+              subsample = 0.3,
+              colsample_bytree = 0.25,
+              set.seed = 1,
+              eval_metric = "error",
+              objective = "binary:logistic",
+              nthread = 2
+)
+
+importance = xgb.importance(feature_names = colnames(trainx), model = xgb)
+head(importance)
+
+Pred = predict(xgb, testx)
+summary(Pred)
+table(y1, Pred>=0.5)
+
+#ROC curve and AUC of the prediction
+library(ROSE)
+roc.curve(y1, Pred)
+
+
+
+
+
+
+
+
