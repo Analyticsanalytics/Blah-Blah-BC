@@ -20,13 +20,16 @@ spl = sample(nrow(df), 0.7*nrow(df))
 train = df[spl,]
 test = df[-spl,]
 
-
+# DMwR takes factors only. So it was converted to factors above
 library(DMwR)
 set.seed(100)
+
+#It will oversample the minority class by double and take majority class as one 3rd (divide majority class by 3)
 train1 = SMOTE(Chargeoff_Status ~ ., train, perc.over = 100, perc.under=300)
 table(train1$Chargeoff_Status)
 table(test$Chargeoff_Status)
 
+# XGB takes labels as numeric only. After converting to numeric, values become [1,2]; therefore we subtracted 1 to get [0,1]
 train1$Chargeoff_Status = as.numeric(train1$Chargeoff_Status)
 test$Chargeoff_Status = as.numeric(test$Chargeoff_Status)
 y = train1$Chargeoff_Status
@@ -36,6 +39,7 @@ y1 = y1-1
 train1$Chargeoff_Status = NULL
 test$Chargeoff_Status = NULL
 
+# XGB takes train data as matrix only
 trainx = as.matrix(train1)
 testx = as.matrix(test)
 
@@ -49,6 +53,17 @@ set.seed(100)
 # nround at 88 has the minm error rate
 cv.res = xgb.cv(data = trainx, nfold = 5, label = y, nround = 100,
                 objective = "binary:logistic", eval_metric = "error")
+
+
+# Explaination of all the parameter: https://github.com/dmlc/xgboost/blob/master/doc/parameter.md
+# eta is [default=0.3, alias: learning_rate]step size shrinkage; used in update to prevents overfitting.
+# max_dpeth is the maximum depth of a tree
+# nround is the max no. of iterations or no. of trees to be added to the model.
+# subsample is ratio of the training instance. Setting it to 0.5 means that XGBoost randomly collected half of the data instances to
+# grow trees and this will prevent overfitting. colsample_bytree [default=1] is subsample ratio of columns when constructing each tree.
+# nthread [default to maximum number of threads available if not set] is the number of parallel threads used to run xgboost
+
+# #Here The output that it'll give, is the classification error on the training data set.
 
 xgb = xgboost(data = trainx, 
               label = y, 
